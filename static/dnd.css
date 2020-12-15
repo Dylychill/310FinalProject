@@ -1,0 +1,53 @@
+/*
+Dylan McKone
+UW HCDE 310 Final Project
+Splits the page into 3 main sections, an introduction, search area, and saved content.
+Sets the color palette (base of Red) and fonts used for entire page. Should be simple yet clearly delineated.
+ */
+
+body {
+    font-family: Helvetica, sans-serif;
+}
+
+main {
+    display:flex;
+    width: 100%;
+}
+
+#saved {
+    margin-left: 15px;
+    margin-right: 5px;
+    width: 30%;
+    right: 0;
+    border: 2px solid #A17AA6;
+    padding: 5px;
+}
+
+#saved h2 {
+    text-align: center;
+}
+
+#dndsearch {
+    width: 70%;
+}
+
+hr {
+    margin-bottom: 10px;
+    width: auto;
+    background-color: crimson;
+    height: 5px;
+}
+
+.saved-el {
+    /* background-color: antiquewhite; */
+    padding: 5px;
+    border: 1px solid #A17AA6;
+    font-weight: bold;
+    color: #A17AA6;
+}
+
+.el-type {
+    font-style: italic;
+    font-size: 80%;
+    color: gray;
+}

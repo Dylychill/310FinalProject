@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DnD 5E</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dnd.css')}}"/>
+</head>
+<body>
+    <section id ="intro">
+        <h1>DnD Music Guide</h1>
+        <p>Music can play a major role in your DnD campaign, but finding the right song to fit with your character and themes can be difficult</p>
+        <p>This website will let you pull information about 5e spells, monsters, and classes and find accompanying music.</p>
+    </section>
+    <hr />
+    <main>
+        <section id="dndsearch">
+            <h2>Search for some DnD stuff!</h2>
+            <form action="gresponse" method="get">
+                <label for="spell">What spell are you looking for (spell-index)?</label>
+                <input required type="text" name="spell" id="spell"/>
+                <input type="submit" value="Go" name="search-btn"/>
+            </form>
+            <section id="returned-values">
+                {% if no_spells %}
+                <p>Doesn't look like there are any spells for that, try checking your spelling!</p>
+                {% endif %}
+                {% if spell_info %}
+                <h2>Here's what we got from that request</h2>
+                <p>Here's some info about {{spell_info["name"]}}</p>
+                <p id="current-name">Name: {{spell_info["name"]}}</p>
+                <p>Description: {{spell_info["desc"][0]}}</p>
+                <p>Spell Level: {{spell_info["level"]}}</p>
+                <p>Casting Time: {{spell_info["casting_time"]}}</p>
+                {% if spell_info["damage"] %}
+                    <p>Damage Type: {{spell_info["damage"]["damage_type"]["name"]}}</p>
+                {% endif %}
+                <form action="gresponse" method="post">
+                    <input type="submit" name="savebtn" value="{{spell_info['name']}}"/>
+                </form>
+                {% endif %}
+            </section>
+        </section>
+        <section id=saved>
+            <h2>Here are your saved elements</h2>
+            {% if saved %}
+                {% for thing in saved %}
+                    <article class="saved-el">
+                        <p>{{thing["name"]}}</p>
+                        <p class="el-type">{{thing["type"]}}</p>
+                    </article>
+                {% endfor %}
+            {% endif %}
+        </section>
+    </main>
+</body>
