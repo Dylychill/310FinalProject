@@ -51,3 +51,8 @@ hr {
     font-size: 80%;
     color: gray;
 }
+
+#savelabel {
+    color: #A17AA6;
+    font-weight: bold;
+}

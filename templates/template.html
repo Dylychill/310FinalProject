@@ -7,44 +7,95 @@
 <body>
     <section id ="intro">
         <h1>DnD Music Guide</h1>
+        <form action="/" method="get">
+            <input type="submit" value="Home Page"/>
+        </form>
         <p>Music can play a major role in your DnD campaign, but finding the right song to fit with your character and themes can be difficult</p>
-        <p>This website will let you pull information about 5e spells, monsters, and classes and find accompanying music.</p>
+        <p>This website will let you pull information about 5e spells, monsters, and classes and find accompanying music.
+            For saved songs, click the title to open a new tab for Sptofy online and listen to the song.
+        </p>
     </section>
     <hr />
     <main>
         <section id="dndsearch">
             <h2>Search for some DnD stuff!</h2>
             <form action="gresponse" method="get">
-                <label for="spell">What spell are you looking for (spell-index)?</label>
-                <input required type="text" name="spell" id="spell"/>
+                <label for="searchEl">What spell are you looking for (spell-index)?</label>
+                <input required type="text" name="searchEl" id="searchEl"/>
+                <input type="radio" name="typeOf" value="spells" id="spells" required checked/>
+                <label for="spells">Spells</label>
+                <input type="radio" name="typeOf" value="monsters" id="monsters"/>
+                <label for="monsters">Monsters</label>
                 <input type="submit" value="Go" name="search-btn"/>
             </form>
-            <section id="returned-values">
-                {% if no_spells %}
-                <p>Doesn't look like there are any spells for that, try checking your spelling!</p>
+            <section id="returned-dnd">
+                {% if no_searched %}
+                    <p>Doesn't look like there are any spells for that, try checking your spelling!</p>
                 {% endif %}
-                {% if spell_info %}
-                <h2>Here's what we got from that request</h2>
-                <p>Here's some info about {{spell_info["name"]}}</p>
-                <p id="current-name">Name: {{spell_info["name"]}}</p>
-                <p>Description: {{spell_info["desc"][0]}}</p>
-                <p>Spell Level: {{spell_info["level"]}}</p>
-                <p>Casting Time: {{spell_info["casting_time"]}}</p>
-                {% if spell_info["damage"] %}
-                    <p>Damage Type: {{spell_info["damage"]["damage_type"]["name"]}}</p>
-                {% endif %}
-                <form action="gresponse" method="post">
-                    <input type="submit" name="savebtn" value="{{spell_info['name']}}"/>
-                </form>
+                <!-- Got something to show user -->
+                {% if searched_info %}
+                    <h2>Here's what we got from that request</h2>
+                    <p>Here's some info about {{searched_info["name"]}}</p>
+                    <p>Name: <span id="current-name">{{searched_info["name"]}}</span></p>
+                    <!-- Variable information depending on type information below -->
+                    <!-- Monster -->
+                    {% if typeEl == "monsters" %}
+                        <p>Size: {{searched_info["size"]}}</p>
+                        <p>Type: {{searched_info["type"]}}</p>
+                        <p>Alignment: {{searched_info["alignment"]}}</p>
+                        <p>Armor Class: {{searched_info["armor_class"]}}</p>
+                        <p>Hit Points: {{searched_info["hit_points"]}}</p>
+                    {% endif %}
+                    <!-- Spell -->
+                    {% if typeEl == "spells" %}
+                        <p>Description: {{searched_info["desc"][0]}}</p>
+                        <p>Spell Level: {{searched_info["level"]}}</p>
+                        <p>Casting Time: {{searched_info["casting_time"]}}</p>
+                        <!-- Some spells don't have damage so only show if applicable -->
+                        {% if searched_info["damage"] %}
+                            <p>Damage Type: {{searched_info["damage"]["damage_type"]["name"]}}</p>
+                        {% endif %}
+                    {% endif %}
+                    <form action="gresponse" method="post" id="savelabel">
+                        <input type="radio" name="save-options" value="save" id="saveEl" required/>
+                        <label for="saveEl">Save this element</label>
+                        <input type="radio" name="save-options" value="song" id="getsong"/>
+                        <label for="getsong">Find a Song</label>
+                        <input type="submit" name="save-or-song" id="save-or-song" value="{{searched_info['name']}}"/>
+                    </form>
                 {% endif %}
             </section>
+            <!-- If music has been created then add a section at the end -->
+            {% if music %}
+                <section id="returned-music">
+                    {% for song in music %}
+                        <article class="song">
+                            <h3>Song: {{song["song-name"]}}</h3>
+                            <p>Album: {{song["album-name"]}}</p>
+                            <!-- Could be multiple artists -->
+                            {% for artist in song["artist-names"] %}
+                                <p>Artist: {{artist}}</p>
+                            {% endfor %}
+                        </article>
+                        <form action="musicresp" method="post">
+                            <label for="savesong">Save this Song</label>
+                            <input type="submit" name="savesong" id="savesong" value="{{song['unique-id']}}"/>
+                        </form>
+                    {% endfor %}
+                </section>
+            {% endif %}
         </section>
         <section id=saved>
             <h2>Here are your saved elements</h2>
             {% if saved %}
                 {% for thing in saved %}
                     <article class="saved-el">
+                        <!-- Only songs have links -->
+                        {% if thing["link"] %}
+                            <p><a href={{thing['link']}}>{{thing["name"]}}</a></p>
+                        {% else %}
                         <p>{{thing["name"]}}</p>
+                        {% endif %}
                         <p class="el-type">{{thing["type"]}}</p>
                     </article>
                 {% endfor %}
