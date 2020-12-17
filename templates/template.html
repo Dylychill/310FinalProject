@@ -10,18 +10,18 @@
         <form action="/" method="get">
             <input type="submit" value="Home Page"/>
         </form>
-        <p>Music can play a major role in your DnD campaign, but finding the right song to fit with your character and themes can be difficult</p>
-        <p>This website will let you pull information about 5e spells, monsters, and classes and find accompanying music.
-            For saved songs, click the title to open a new tab for Sptofy online and listen to the song.
-        </p>
+        <p>Music can play a major role in your DnD campaign, any tense situation into a life-or-death decision, can offer insight into an NPCs motives, and set the mood alongside a DM’s (Dungeon Master) exposition. But finding the right song to fit with your character and themes can be difficult.</p>
+        <p>This website will let you pull information about 5e spells and monsters and find accompanying music.
+            Don't know what you are looking for? Searching for "random" and selecting either spell or monster will return information on a random element of that type.</p>
+        <p>For saved songs, click the title to open a new tab for Sptofy online and listen to the song.</p>
     </section>
     <hr />
     <main>
         <section id="dndsearch">
             <h2>Search for some DnD stuff!</h2>
-            <form action="gresponse" method="get">
+            <form action="response" method="get">
                 <label for="searchEl">What spell are you looking for (spell-index)?</label>
-                <input required type="text" name="searchEl" id="searchEl"/>
+                <input required type="text" placeholder="alarm" name="searchEl" id="searchEl"/>
                 <input type="radio" name="typeOf" value="spells" id="spells" required checked/>
                 <label for="spells">Spells</label>
                 <input type="radio" name="typeOf" value="monsters" id="monsters"/>
@@ -30,7 +30,7 @@
             </form>
             <section id="returned-dnd">
                 {% if no_searched %}
-                    <p>Doesn't look like there are any spells for that, try checking your spelling!</p>
+                    <p>Doesn't look like there are any results for that, try checking your spelling!</p>
                 {% endif %}
                 <!-- Got something to show user -->
                 {% if searched_info %}
@@ -56,7 +56,7 @@
                             <p>Damage Type: {{searched_info["damage"]["damage_type"]["name"]}}</p>
                         {% endif %}
                     {% endif %}
-                    <form action="gresponse" method="post" id="savelabel">
+                    <form action="response" method="post" id="savelabel">
                         <input type="radio" name="save-options" value="save" id="saveEl" required/>
                         <label for="saveEl">Save this element</label>
                         <input type="radio" name="save-options" value="song" id="getsong"/>
@@ -92,7 +92,7 @@
                     <article class="saved-el">
                         <!-- Only songs have links -->
                         {% if thing["link"] %}
-                            <p><a href={{thing['link']}}>{{thing["name"]}}</a></p>
+                            <p><a target="_blank" href={{thing['link']}}>{{thing["name"]}}</a></p>
                         {% else %}
                         <p>{{thing["name"]}}</p>
                         {% endif %}
@@ -102,4 +102,8 @@
             {% endif %}
         </section>
     </main>
+    <footer>
+        <p>Website made by Dylan McKone</p>
+        <p>D&D information taken from the <a href="https://www.dnd5eapi.co/api/">dnd5eapi</a> and music taken from the <a href="https://developer.spotify.com/documentation/web-api/quick-start/">Spotify API</a>.</p>
+    </footer>
 </body>

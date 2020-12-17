@@ -1,5 +1,6 @@
 # Dylan McKone
 # HCDE 310 Final Project
+# Date: 12/16/20
 # Utilizing a base HTML template, this file sets the routes that allow users to input some form data
 # that is used to make an API call to DnD5e API (Dungeons and Dragons 5th Edition) and get some information about various DND elements.
 # Based on these elements, users can get song recommendations (Spotify API) and chose to save some of the queried data.
@@ -10,6 +11,7 @@ import urllib.parse, urllib.request, urllib.error, json
 import os
 import logging
 import base64
+import random
 from secrets import CLIENT_ID, CLIENT_SECRET # authorization for Spotify API defined in another secret file
 # the above secrets file will be ignored by git
 
@@ -25,11 +27,7 @@ base_spotsearch_url = "https://api.spotify.com/v1/search" # base url for the Spo
 def main_handler():
     spotifyAuth() # getting authorization for spotify api
     sessdata = getSessionSaveData()
-    # if sessdata is not None:
-        # all_saved = json.loads(sessdata)
     return render_template("template.html", saved=sessdata)
-    # else:
-    #     return render_template("template.html")
 
 # user wants to get song reccomendations based on a dnd element
 @app.route("/musicresp", methods=['POST'])
@@ -55,7 +53,7 @@ def getMusic():
     return render_template("template.html", saved=all_saved)
 
 # Handles most of the DND search functionality - searching for a new query (GET) and saving dnd elements (POST)
-@app.route("/gresponse", methods=['GET', 'POST'])
+@app.route("/response", methods=['GET', 'POST'])
 def search_handler():
     # check if user already has save elements
     all_saved = getSessionSaveData()
@@ -104,6 +102,11 @@ def search_handler():
 # will return information about that element by accessing the dnd API
 # Example url: https://www.dnd5eapi.co/api/spells/acid-arrow/
 def getDNDInfo(typeOf, index):
+    # if the index is the word 'random' then get a random element of this type and get info on that
+    if index == 'random':
+        randInd = getRandomElement(typeOf)
+        if randInd is not None:
+            index = randInd
     fullurl = basedndurl + typeOf + "/" + index
     fetched = safeFetch(fullurl)
     if fetched is not None:
@@ -111,6 +114,16 @@ def getDNDInfo(typeOf, index):
     else: # didn't exist in the API
         return None
 
+# Gets the resource list of a given type from D&D API and returns the index (id/name) of a random element available in the API
+def getRandomElement(typeOf):
+    resourcesURL = basedndurl + typeOf + "/" # returns JSON of all available elements
+    fetched = safeFetch(resourcesURL)
+    if fetched is not None:
+        allEl = json.loads(fetched.read())
+        randIndex = random.randint(0, allEl["count"])
+        return allEl["results"][randIndex]["index"]
+    else: # didn't exist in the API
+        return None
 
 # Spotify Details - only accessing public content, Client Credentials
 # Get client credentials access token from Spotify API
@@ -123,7 +136,7 @@ def spotifyAuth():
     # the Authorization in the *header*, as a Base 64-encoded
     # string that contains the client ID and client secret key.
     # The field must have the format:
-    # Authorizati   on: Basic <base64 encoded client_id:client_secret>
+    # Authorization: Basic <base64 encoded client_id:client_secret>
     # To get a bearer token to work as a "client," it also needs:
     # grant_type = "client_credentials" as a parameter
     try:
@@ -193,13 +206,13 @@ def getSessionSaveData():
         all_saved = [] # each element in this list will be JSON object per element (spell/monster/etc)
     return all_saved
 
-# cleans up search terms in form that Spotify Search API will accept
+# cleans up search terms in form that Spotify Search API will accept, changing space values
 def cleanQuery(raw):
     # Encode spaces with the hex code %20
     return raw.replace(" ", "%20")
 
 
-# Helper method to make json a bit more readable, does not alter content
+# make json a bit more readable, does not alter content
 def pretty(obj):
     return json.dumps(obj, sort_keys=True, indent=2)
 
